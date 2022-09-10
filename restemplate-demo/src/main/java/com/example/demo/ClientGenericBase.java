@@ -39,6 +39,10 @@ public class ClientGenericBase {
 		HttpEntity<String> httpEntity = new HttpEntity<>(header);
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+		
+		
+		
+		
 	}
 
 }
