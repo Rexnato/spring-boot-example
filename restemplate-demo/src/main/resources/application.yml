@@ -1,0 +1,9 @@
+
+clients:
+  name : godzilla
+  url : http://localhost:23703/api
+  paths :
+    path : /godzilla
+    
+    
+   

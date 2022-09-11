@@ -2,7 +2,7 @@ package com.example.demo;
 
 import java.util.List;
 
-public interface ClientGodzilla {
+public interface IGodzillaClient {
 	
 	//gets
 	
