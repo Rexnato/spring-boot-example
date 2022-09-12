@@ -22,6 +22,11 @@ public class ClientGenericBase {
 	@Autowired
 	RestTemplate restTemplate;
 	
+	protected HttpHeaders globalHeaders = new HttpHeaders();
+	
+
+
+
 	/***
 	 * Method to consume http method ,withoud body in send petion
 	 * @param <T>
@@ -31,14 +36,11 @@ public class ClientGenericBase {
 	 */
 	public  <T> ResponseEntity<T> execute(String url,HttpMethod httpMetod,Class<T> responseTypeClass) {
 		
-		HttpHeaders header = new HttpHeaders();
-		header.setContentType(MediaType.APPLICATION_JSON);
-		header.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		
-		
-		HttpEntity<String> httpEntity = new HttpEntity<>(header);
+		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
+
+
 
 }
