@@ -47,7 +47,7 @@ class GodzillaClientTest {
 		
 		Godzilla godzillaMock = getGodzillaMock();
 		
-		String url = enviroment.getProperty("api.godzilla?nombre="+godzillaMock.getNombre());
+		String url = String.format("%s?nombre=%s",this.enviroment.getProperty("api.godzilla"), godzillaMock.getNombre());
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

@@ -1,6 +1,7 @@
 package com.example.demo;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -39,9 +40,16 @@ public class ClientGenericBase {
 	 */
 	public  <T> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
 		
-		String url = enviroment.getProperty(urlProperties);
+		//resolve urlquery in case queryparams
+		String url =  String.format("%s", enviroment.getProperty(StringUtils.substringBefore(urlProperties, "?")));
+		
+		String queryParams = StringUtils.substringAfter(urlProperties, "?");
+		if(StringUtils.isNotBlank(queryParams.trim())) {
+			url = String.format("%s?%s", url,queryParams);
+		}
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
+		
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
