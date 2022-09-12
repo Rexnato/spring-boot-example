@@ -10,7 +10,7 @@ public interface IGodzillaClient {
 	
 	List<Godzilla> getFamiliGodzilla();
 	
-	void postGodzilla(Godzilla godzilla);
+	Godzilla postGodzilla(Godzilla godzilla);
 	
 	Godzilla putGodzilla(Godzilla godzilla);
 	

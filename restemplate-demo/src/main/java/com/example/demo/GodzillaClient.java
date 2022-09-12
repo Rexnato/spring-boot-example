@@ -30,9 +30,9 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 	}
 
 	@Override
-	public void postGodzilla(Godzilla godzilla) {
-	
+	public Godzilla postGodzilla(Godzilla godzilla) {
 		
+		return this.execute("api.godzilla", HttpMethod.POST,godzilla, Godzilla.class).getBody();
 	}
 
 	@Override

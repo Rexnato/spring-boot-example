@@ -1,6 +1,7 @@
 package com.example.demo;
 
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -26,10 +27,6 @@ public class ClientGenericBase {
 	RestTemplate restTemplate;
 	
 	protected HttpHeaders globalHeaders = new HttpHeaders();
-	
-	
-	
-
 
 	/***
 	 * Method to consume http method ,withoud body in send petion
@@ -40,13 +37,7 @@ public class ClientGenericBase {
 	 */
 	public  <T> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
 		
-		//resolve urlquery in case queryparams
-		String url =  String.format("%s", enviroment.getProperty(StringUtils.substringBefore(urlProperties, "?")));
-		
-		String queryParams = StringUtils.substringAfter(urlProperties, "?");
-		if(StringUtils.isNotBlank(queryParams.trim())) {
-			url = String.format("%s?%s", url,queryParams);
-		}
+		String url =  this.resolveUrlProperties(urlProperties);
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
 		
@@ -54,8 +45,39 @@ public class ClientGenericBase {
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
 
-
+	/***
+	 * Method to consume http method ,with body in send petion.the body will converth to json object
+	 * @param <T>
+	 * @param <K>
+	 * @param url
+	 * @return 
+	 * @return 
+	 */
+	public  <T, K> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,K body,Class<T> responseTypeClass) {
+		
+		String url =  this.resolveUrlProperties(urlProperties);
+		
+		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
+		
+		
+		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+	}
 	
+	/***
+	 * Resolve url from properties
+	 * @return
+	 */
+	protected String resolveUrlProperties(String urlProperties) {
+		
+		String url =  String.format("%s", enviroment.getProperty(StringUtils.substringBefore(urlProperties, "?")));
+		
+		String queryParams = StringUtils.substringAfter(urlProperties, "?");
+		if(StringUtils.isNotBlank(queryParams.trim())) {
+			url = String.format("%s?%s", url,queryParams);
+		}
+		
+		return url;
+	}
 
 
 }

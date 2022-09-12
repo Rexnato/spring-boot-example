@@ -90,6 +90,32 @@ class GodzillaClientTest {
 		Assertions.assertEquals(familyPapo.size(),response.size());
 	}
 	
+	
+	@Test
+	void newGodzilla() throws JsonProcessingException {
+		
+		Godzilla godzillaMock = getGodzillaMock();
+		godzillaMock.setId(0);//null becauso is not created
+		
+		String url = enviroment.getProperty("api.godzilla");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
+		this.mockServer.expect(requestTo(url))
+		.andExpect(method(HttpMethod.POST))
+		.andRespond(withSuccess()
+				.body(mapper.writeValueAsString(godzillaMock))
+				.headers(headers));
+		
+		
+		Godzilla response = this.client.postGodzilla(godzillaMock);
+		
+		Assertions.assertNotEquals(godzillaMock.getId(), response.getId());
+		Assertions.assertTrue(response.getId() > 0);
+	}
+	
 	/**
 	 * Generate godzilla mock
 	 * @return
