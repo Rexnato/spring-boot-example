@@ -1,15 +1,21 @@
 package com.example.demo;
 
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -22,6 +28,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ch.qos.logback.core.encoder.ByteArrayUtil;
 
 @RestClientTest(value = {IGodzillaClient.class,GodzillaClient.class})
 @AutoConfigureWebClient(registerRestTemplate = true)
@@ -37,11 +45,9 @@ class GodzillaClientTest {
 	private MockRestServiceServer mockServer;
 	
 	@Test
-	void testUno() throws JsonProcessingException {
+	void godzillaByName() throws JsonProcessingException {
 		
-		Godzilla godzillaMock = new Godzilla();
-		godzillaMock.setEdad(4000);
-		godzillaMock.setNombre("Godzilla");
+		Godzilla godzillaMock = getGodzillaMock();
 		
 		String url = "http://localhost:23703/api/godzilla";
 		
@@ -56,9 +62,35 @@ class GodzillaClientTest {
 				.headers(headers));
 		
 		
-		Godzilla godzilla = this.client.getGodzilla("papoGodzilla");
+		Godzilla response = this.client.getGodzilla(godzillaMock.getNombre());
 		
-		Assertions.assertTrue(true);
+		Assertions.assertEquals(godzillaMock.getId(), response.getId());
+		Assertions.assertEquals(godzillaMock.getEdad(), response.getEdad());
+		Assertions.assertEquals(godzillaMock.getNombre(), response.getNombre());
+	}
+	
+	/**
+	 * Generate godzilla mock
+	 * @return
+	 */
+	private Godzilla getGodzillaMock() {
+		
+		return new Godzilla(ThreadLocalRandom.current().nextInt(1, 1000000), ThreadLocalRandom.current().nextInt(1, 1000000), UUID.randomUUID().toString());
+	}
+	
+	/**
+	 * Generate list godzilla mock
+	 * @return
+	 */
+	private List<Godzilla> getGodzillasMock(int cantidad) {
+		
+		List<Godzilla> list = new ArrayList<>();
+		
+		for (int i = 0; i < cantidad; i++) {
+			list.add(getGodzillaMock());
+		}
+		
+		return list;
 	}
 	
 
