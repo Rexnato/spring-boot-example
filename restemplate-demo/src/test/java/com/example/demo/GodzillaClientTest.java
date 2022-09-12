@@ -3,6 +3,7 @@ package com.example.demo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,7 +96,6 @@ class GodzillaClientTest {
 	void newGodzilla() throws JsonProcessingException {
 		
 		Godzilla godzillaMock = getGodzillaMock();
-		godzillaMock.setId(0);//null becauso is not created
 		
 		String url = enviroment.getProperty("api.godzilla");
 		
@@ -112,8 +112,49 @@ class GodzillaClientTest {
 		
 		Godzilla response = this.client.postGodzilla(godzillaMock);
 		
-		Assertions.assertNotEquals(godzillaMock.getId(), response.getId());
-		Assertions.assertTrue(response.getId() > 0);
+		Assertions.assertEquals(godzillaMock.getId(), response.getId());
+	}
+	
+	@Test
+	void newGodzilla401() throws JsonProcessingException {
+		
+		Godzilla godzillaMock = getGodzillaMock();
+		
+		String url = enviroment.getProperty("api.godzilla");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
+		this.mockServer.expect(requestTo(url))
+		.andExpect(method(HttpMethod.POST))
+		.andRespond(withUnauthorizedRequest());
+		
+		
+		Godzilla response = this.client.postGodzilla(godzillaMock);
+		
+		Assertions.assertEquals(godzillaMock.getId(), response.getId());
+	}
+	
+	@Test
+	void newGodzilla401Body() throws JsonProcessingException {
+		
+		Godzilla godzillaMock = getGodzillaMock();
+		
+		String url = enviroment.getProperty("api.godzilla");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
+		this.mockServer.expect(requestTo(url))
+		.andExpect(method(HttpMethod.POST))
+		.andRespond(withUnauthorizedRequest().body("hola"));
+		
+		
+		Godzilla response = this.client.postGodzilla(godzillaMock);
+		
+		Assertions.assertEquals(godzillaMock.getId(), response.getId());
 	}
 	
 	/**

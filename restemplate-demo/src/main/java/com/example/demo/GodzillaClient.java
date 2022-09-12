@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -16,6 +17,7 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 		super();
 		this.globalHeaders.setContentType(MediaType.APPLICATION_JSON);
 		this.globalHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
 	}
 
 	@Override
@@ -32,7 +34,9 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 	@Override
 	public Godzilla postGodzilla(Godzilla godzilla) {
 		
-		return this.execute("api.godzilla", HttpMethod.POST,godzilla, Godzilla.class).getBody();
+		ResponseEntity<Godzilla> s =  this.execute("api.godzilla", HttpMethod.POST,godzilla, Godzilla.class);
+		
+		return s.getBody();
 	}
 
 	@Override

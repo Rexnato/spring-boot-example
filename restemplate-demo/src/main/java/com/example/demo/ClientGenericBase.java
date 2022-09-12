@@ -11,6 +11,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /***
  * Client generic 
  * all clases than use must be a @service (herencia)
@@ -26,7 +29,14 @@ public class ClientGenericBase {
 	@Autowired
 	RestTemplate restTemplate;
 	
+	@Autowired
+	ObjectMapper mapper;
+	
 	protected HttpHeaders globalHeaders = new HttpHeaders();
+	
+	protected boolean useApplicationToken = false;
+	
+	
 
 	/***
 	 * Method to consume http method ,withoud body in send petion
@@ -57,8 +67,17 @@ public class ClientGenericBase {
 		
 		String url =  this.resolveUrlProperties(urlProperties);
 		
-		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
+		String jsonBody;
 		
+		try {
+			
+			jsonBody = this.mapper.writeValueAsString(body);
+			
+		} catch (JsonProcessingException e) {
+			jsonBody = " "; //this must be an exception catc by handler
+		}
+		
+		HttpEntity<String> httpEntity = new HttpEntity<>(jsonBody, this.globalHeaders);
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
