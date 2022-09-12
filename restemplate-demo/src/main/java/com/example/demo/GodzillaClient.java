@@ -1,5 +1,4 @@
 package com.example.demo;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,15 +20,13 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 
 	@Override
 	public Godzilla getGodzilla(String nombre) {
-		
-		
-		return this.execute("http://localhost:23703/api/godzilla", HttpMethod.GET, Godzilla.class).getBody();
+		return this.execute(String.format("api.godzilla?nombre=%s", nombre), HttpMethod.GET, Godzilla.class).getBody();
 	}
 
 	@Override
 	public List<Godzilla> getFamiliGodzilla() {
-	
-		return null;
+		Godzilla[] array  = this.execute("api.godzilla", HttpMethod.GET, Godzilla[].class).getBody();
+		return Arrays.asList(array);
 	}
 
 	@Override

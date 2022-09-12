@@ -1,12 +1,11 @@
 package com.example.demo;
 
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,11 +19,15 @@ import org.springframework.web.client.RestTemplate;
 public class ClientGenericBase {
 	
 	@Autowired
+	private Environment enviroment;
+	
+	@Autowired
 	RestTemplate restTemplate;
 	
 	protected HttpHeaders globalHeaders = new HttpHeaders();
 	
-
+	
+	
 
 
 	/***
@@ -34,13 +37,17 @@ public class ClientGenericBase {
 	 * @return 
 	 * @return 
 	 */
-	public  <T> ResponseEntity<T> execute(String url,HttpMethod httpMetod,Class<T> responseTypeClass) {
+	public  <T> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
+		
+		String url = enviroment.getProperty(urlProperties);
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
 
+
+	
 
 
 }

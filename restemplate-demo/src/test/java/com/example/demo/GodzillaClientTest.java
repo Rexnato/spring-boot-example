@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -36,6 +37,9 @@ class GodzillaClientTest {
 	ObjectMapper mapper;
 	
 	@Autowired
+	private Environment enviroment;
+	
+	@Autowired
 	private MockRestServiceServer mockServer;
 	
 	@Test
@@ -43,7 +47,7 @@ class GodzillaClientTest {
 		
 		Godzilla godzillaMock = getGodzillaMock();
 		
-		String url = "http://localhost:23703/api/godzilla";
+		String url = enviroment.getProperty("api.godzilla?nombre="+godzillaMock.getNombre());
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -61,6 +65,29 @@ class GodzillaClientTest {
 		Assertions.assertEquals(godzillaMock.getId(), response.getId());
 		Assertions.assertEquals(godzillaMock.getEdad(), response.getEdad());
 		Assertions.assertEquals(godzillaMock.getNombre(), response.getNombre());
+	}
+	
+	@Test
+	void godzillaList() throws JsonProcessingException {
+		
+		List<Godzilla> familyPapo = getGodzillasMock(3);
+		
+		String url = enviroment.getProperty("api.godzilla");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
+		this.mockServer.expect(requestTo(url))
+		.andExpect(method(HttpMethod.GET))
+		.andRespond(withSuccess()
+				.body(mapper.writeValueAsString(familyPapo))
+				.headers(headers));
+		
+		
+		List<Godzilla> response = this.client.getFamiliGodzilla();
+		
+		Assertions.assertEquals(familyPapo.size(),response.size());
 	}
 	
 	/**
