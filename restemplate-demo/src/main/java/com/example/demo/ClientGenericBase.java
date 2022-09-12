@@ -2,13 +2,18 @@ package com.example.demo;
 
 
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,8 +40,7 @@ public class ClientGenericBase {
 	protected HttpHeaders globalHeaders = new HttpHeaders();
 	
 	protected boolean useApplicationToken = false;
-	
-	
+
 
 	/***
 	 * Method to consume http method ,withoud body in send petion
@@ -51,7 +55,11 @@ public class ClientGenericBase {
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
 		
-		
+		if(this.useApplicationToken){
+			//meter token aplicacion
+			//metercabezeratoken();
+		}
+	
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
 

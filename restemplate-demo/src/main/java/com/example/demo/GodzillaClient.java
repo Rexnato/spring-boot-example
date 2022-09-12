@@ -12,16 +12,23 @@ import org.springframework.stereotype.Service;
 public class GodzillaClient  extends ClientGenericBase implements IGodzillaClient{
 
 	
+	
+	
+	
 
 	public GodzillaClient() {
 		super();
 		this.globalHeaders.setContentType(MediaType.APPLICATION_JSON);
 		this.globalHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		
+		//this atribute dont work
+		this.useApplicationToken = true;
+		
 	}
 
 	@Override
 	public Godzilla getGodzilla(String nombre) {
+		
 		return this.execute(String.format("api.godzilla?nombre=%s", nombre), HttpMethod.GET, Godzilla.class).getBody();
 	}
 
@@ -42,6 +49,7 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 	@Override
 	public Godzilla putGodzilla(Godzilla godzilla) {
 	
+		
 		return null;
 	}
 
