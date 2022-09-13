@@ -10,8 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,7 +65,7 @@ public class ClientGenericBase {
 			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 			
 		} catch (HttpStatusCodeException e) {
-			 return this.getResponseErrorClient().resolveRestClient(e);
+			 return this.getResponseErrorClient().resolveResponseError(e.getStatusCode(), e.getResponseBodyAsString());
 		}catch (Exception e) {
 			return new ResponseDTO<>(ExceptionCode.COD_SE001, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -137,9 +137,9 @@ public class ClientGenericBase {
 		return new IResponseErrorClient() {
 			
 			@Override
-			public <T> ResponseDTO<T> resolveRestClient(RestClientException exception) {
+			public <T> ResponseDTO<T> resolveResponseError(HttpStatus httpStatus, String body) {
 				
-				return null;
+				return new ResponseDTO<>(ExceptionCode.COD_CG001.formatMessage(httpStatus.getReasonPhrase()), httpStatus);
 			}
 		};
 	}
@@ -185,7 +185,7 @@ public class ClientGenericBase {
 		 * @param exception
 		 * @return
 		 */
-		<T> ResponseDTO<T> resolveRestClient(RestClientException exception);
+		<T> ResponseDTO<T> resolveResponseError(HttpStatus error, @Nullable String body);
 	}
 
 

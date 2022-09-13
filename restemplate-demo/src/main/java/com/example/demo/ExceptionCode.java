@@ -21,6 +21,8 @@ public enum ExceptionCode {
 	COD_SE001("SE001", "Occurred error, please try again."),
 	
 	//Code app
+	COD_CG001("COD_OAUTH001", "%s"),
+	
 	COD_OAUTH001("COD_OAUTH001", "%s"),
 	COD_OAUTH002("COD_OAUTH002", "Occurred error while invoking Auth Sevice."),
 	
