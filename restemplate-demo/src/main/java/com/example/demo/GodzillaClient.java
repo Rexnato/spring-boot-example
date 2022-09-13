@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -20,28 +19,24 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 
 	@Override
 	public ResponseDTO<Godzilla> getGodzilla(String nombre) {
-		return this.execute(String.format("api.godzilla?nombre=%s", nombre), HttpMethod.GET, new ParameterizedTypeReference<Godzilla>() {});
+		return this.execute(String.format(IGodzillaClient.API_GODZILLA+"?nombre=%s", nombre), HttpMethod.GET, new ParameterizedTypeReference<Godzilla>() {});
 	}
 
 	@Override
 	public ResponseDTO<List<Godzilla>> getFamiliGodzilla() {
 		
-		return this.execute("api.godzilla", HttpMethod.GET, new ParameterizedTypeReference<List<Godzilla>>() {});
+		return this.execute(IGodzillaClient.API_GODZILLA, HttpMethod.GET, new ParameterizedTypeReference<List<Godzilla>>() {});
 	}
 
 	@Override
-	public Godzilla postGodzilla(Godzilla godzilla) {
+	public ResponseDTO<Godzilla> postGodzilla(Godzilla godzilla) {
 		
-		ResponseEntity<Godzilla> s =  this.execute("api.godzilla", HttpMethod.POST,godzilla, Godzilla.class);
-		
-		return s.getBody();
+		return this.execute(IGodzillaClient.API_GODZILLA, HttpMethod.POST,godzilla, new ParameterizedTypeReference<Godzilla>() {});
 	}
 
 	@Override
-	public Godzilla putGodzilla(Godzilla godzilla) {
-	
-		
-		return null;
+	public ResponseDTO<Void> putGodzilla(Godzilla godzilla) {
+		return this.execute(IGodzillaClient.API_GODZILLA, HttpMethod.PUT,godzilla, new ParameterizedTypeReference<Void>() {});
 	}
 	
 	

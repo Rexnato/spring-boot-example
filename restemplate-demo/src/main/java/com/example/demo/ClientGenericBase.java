@@ -82,7 +82,7 @@ public class ClientGenericBase {
 	 * @return 
 	 * @return 
 	 */
-	public  <T, K> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,K body,Class<T> responseTypeClass) {
+	public  <T, K> ResponseDTO<T> execute(String urlProperties,HttpMethod httpMetod,K body,ParameterizedTypeReference<T> responseType) {
 		
 		String url =  this.resolveUrlProperties(urlProperties);
 		
@@ -93,12 +93,23 @@ public class ClientGenericBase {
 			jsonBody = this.mapper.writeValueAsString(body);
 			
 		} catch (JsonProcessingException e) {
-			jsonBody = " "; //this must be an exception catc by handler
+			jsonBody = " "; //this must be an exception catc by handler because is runtime and is error from programmer
 		}
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(jsonBody, addHeaders());
 		
-		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+		ResponseEntity<T> responseEntity = null;
+		
+		try {
+			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseType);
+			
+		} catch (HttpStatusCodeException e) {
+			 return this.getResponseErrorClient().resolveResponseError(e.getStatusCode(), e.getResponseBodyAsString());
+		}catch (Exception e) {
+			return new ResponseDTO<>(ExceptionCode.COD_SE001, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseDTO<>(responseEntity.getBody(),responseEntity.getStatusCode());
 	}
 	
 	/**

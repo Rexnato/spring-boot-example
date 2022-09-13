@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 
@@ -110,7 +111,7 @@ class GodzillaClientTest {
 				.headers(headers));
 		
 		
-		Godzilla response = this.client.postGodzilla(godzillaMock);
+		Godzilla response = this.client.postGodzilla(godzillaMock).getContent();
 		
 		Assertions.assertEquals(godzillaMock.getId(), response.getId());
 	}
@@ -131,13 +132,14 @@ class GodzillaClientTest {
 		.andRespond(withUnauthorizedRequest());
 		
 		
-		Godzilla response = this.client.postGodzilla(godzillaMock);
+		ResponseDTO<Godzilla> response = this.client.postGodzilla(godzillaMock);
 		
-		Assertions.assertEquals(godzillaMock.getId(), response.getId());
+		Assertions.assertTrue(response.isError());
+		Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatus());
 	}
 	
 	@Test
-	void newGodzilla401Body() throws JsonProcessingException {
+	void updateGodzilla() throws JsonProcessingException {
 		
 		Godzilla godzillaMock = getGodzillaMock();
 		
@@ -148,13 +150,15 @@ class GodzillaClientTest {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		
 		this.mockServer.expect(requestTo(url))
-		.andExpect(method(HttpMethod.POST))
-		.andRespond(withUnauthorizedRequest().body("hola"));
+		.andExpect(method(HttpMethod.PUT))
+		.andRespond(withSuccess()
+				.body(mapper.writeValueAsString(godzillaMock))
+				.headers(headers));
 		
 		
-		Godzilla response = this.client.postGodzilla(godzillaMock);
+		ResponseDTO<Void> response = this.client.putGodzilla(godzillaMock);
 		
-		Assertions.assertEquals(godzillaMock.getId(), response.getId());
+		Assertions.assertTrue(response.isValid());
 	}
 	
 	/**
