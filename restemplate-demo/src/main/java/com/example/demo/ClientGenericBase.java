@@ -91,7 +91,7 @@ public class ClientGenericBase {
 	}
 	
 	/***
-	 * Resolve url from properties
+	 * method that Resolve url from properties
 	 * @return
 	 */
 	protected String resolveUrlProperties(String urlProperties) {
@@ -107,11 +107,19 @@ public class ClientGenericBase {
 	}
 	
 	/**
+	 * Method that resolve authorizathiontoken 
+	 * this method will be overwrite 
+	 * 
+	 * the param arg must be the access token or acces key to create the header autorizathion 
+	 * for example 
+	 * arg = Bearer 1234 ------> Authorization Bearer 1234
+	 * arg = Basic 1234 -------->Authorization Basic 1234
+	 * 
 	 * 
 	 */
-	protected String resolveAuthorizathionToken() {
+	protected String resolveAuthorizathionToken(String arg) {
 		
-		return "";
+		return String.format("Authorization: %s", arg);
 	}
 
 
