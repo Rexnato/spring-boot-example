@@ -3,6 +3,8 @@ package com.example.demo;
 
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,12 +55,7 @@ public class ClientGenericBase {
 		
 		String url =  this.resolveUrlProperties(urlProperties);
 		
-		HttpEntity<String> httpEntity = new HttpEntity<>(globalHeaders);
-		
-		if(this.useApplicationToken){
-			//meter token aplicacion
-			//metercabezeratoken();
-		}
+		HttpEntity<String> httpEntity = new HttpEntity<>(addHeaders());
 	
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 	}
@@ -85,9 +82,23 @@ public class ClientGenericBase {
 			jsonBody = " "; //this must be an exception catc by handler
 		}
 		
-		HttpEntity<String> httpEntity = new HttpEntity<>(jsonBody, this.globalHeaders);
+		HttpEntity<String> httpEntity = new HttpEntity<>(jsonBody, addHeaders());
 		
 		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+	}
+	
+	/**
+	 * Add headers to httpentity request
+	 */
+	private HttpHeaders addHeaders() {
+		
+		HttpHeaders httpHeaders = new HttpHeaders();
+		
+		globalHeaders.forEach((key,value)-> {
+			httpHeaders.put(key, value);
+		});
+		
+		return httpHeaders;
 	}
 	
 	/***
@@ -104,6 +115,14 @@ public class ClientGenericBase {
 		}
 		
 		return url;
+	}
+	
+	/**
+	 * 
+	 */
+	protected String resolveAuthorizathionHeader() {
+		
+		return "";
 	}
 
 
