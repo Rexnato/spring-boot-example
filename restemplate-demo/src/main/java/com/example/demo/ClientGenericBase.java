@@ -33,8 +33,6 @@ public class ClientGenericBase {
 	ObjectMapper mapper;
 	
 	protected HttpHeaders globalHeaders = new HttpHeaders();
-	
-	protected boolean useApplicationToken = false;
 
 
 	/***
