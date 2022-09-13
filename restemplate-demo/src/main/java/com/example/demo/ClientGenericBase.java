@@ -8,7 +8,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +36,14 @@ public class ClientGenericBase {
 	ObjectMapper mapper;
 	
 	protected HttpHeaders globalHeaders = new HttpHeaders();
+	
+	private IResponseErrorClient responseErrorClient;
 
+
+	public ClientGenericBase() {
+		super();
+		this.responseErrorClient = this.defaultResponseErrorClient();
+	}
 
 	/***
 	 * Method to consume http method ,withoud body in send petion
@@ -54,8 +64,10 @@ public class ClientGenericBase {
 		try {
 			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
 			
-		} catch (Exception e) {
-			 return getResponseErrorClient().doResolve(e);
+		} catch (HttpStatusCodeException e) {
+			 return this.getResponseErrorClient().resolveRestClient(e);
+		}catch (Exception e) {
+			return new ResponseDTO<>(ExceptionCode.COD_SE001, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return new ResponseDTO<>(responseEntity.getBody(),responseEntity.getStatusCode());
@@ -104,7 +116,7 @@ public class ClientGenericBase {
 	 * method that Resolve url from properties
 	 * @return
 	 */
-	protected String resolveUrlProperties(String urlProperties) {
+	private String resolveUrlProperties(String urlProperties) {
 		
 		String url =  String.format("%s", enviroment.getProperty(StringUtils.substringBefore(urlProperties, "?")));
 		
@@ -120,12 +132,12 @@ public class ClientGenericBase {
 	 * if this method is not override resolve the error from exception with values from IResponse error client generic
 	 * @return
 	 */
-	protected IResponseErrorClient getResponseErrorClient() {
+	private IResponseErrorClient defaultResponseErrorClient() {
 		
 		return new IResponseErrorClient() {
 			
 			@Override
-			public <T> ResponseDTO<T> doResolve(Exception exception) {
+			public <T> ResponseDTO<T> resolveRestClient(RestClientException exception) {
 				
 				return null;
 			}
@@ -151,6 +163,15 @@ public class ClientGenericBase {
 	}
 	
 	
+	public IResponseErrorClient getResponseErrorClient() {
+		return responseErrorClient;
+	}
+
+	public void setResponseErrorClient(IResponseErrorClient responseErrorClient) {
+		this.responseErrorClient = responseErrorClient;
+	}
+
+
 	/**
 	 * Interface to custumise error response
 	 * @author jnoh
@@ -159,12 +180,12 @@ public class ClientGenericBase {
 	public interface IResponseErrorClient {
 		
 		/**
-		 * Metodo to resolve response from exception
+		 * Metodo to resolve response from exception from restemplate
 		 * @param <T>
 		 * @param exception
 		 * @return
 		 */
-		<T> ResponseDTO<T> doResolve(Exception exception);
+		<T> ResponseDTO<T> resolveRestClient(RestClientException exception);
 	}
 
 

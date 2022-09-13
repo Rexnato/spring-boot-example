@@ -21,12 +21,12 @@ public class GodzillaClient  extends ClientGenericBase implements IGodzillaClien
 	@Override
 	public Godzilla getGodzilla(String nombre) {
 		
-		return this.execute(String.format("api.godzilla?nombre=%s", nombre), HttpMethod.GET, Godzilla.class).getBody();
+		return this.execute(String.format("api.godzilla?nombre=%s", nombre), HttpMethod.GET, Godzilla.class);
 	}
 
 	@Override
 	public List<Godzilla> getFamiliGodzilla() {
-		Godzilla[] array  = this.execute("api.godzilla", HttpMethod.GET, Godzilla[].class).getBody();
+		Godzilla[] array  = this.execute("api.godzilla", HttpMethod.GET, Godzilla[].class);
 		return Arrays.asList(array);
 	}
 
