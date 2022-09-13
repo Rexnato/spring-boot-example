@@ -2,20 +2,13 @@ package com.example.demo;
 
 
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -94,9 +87,7 @@ public class ClientGenericBase {
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		
-		globalHeaders.forEach((key,value)-> {
-			httpHeaders.put(key, value);
-		});
+		globalHeaders.forEach(httpHeaders::put);
 		
 		return httpHeaders;
 	}
@@ -120,7 +111,7 @@ public class ClientGenericBase {
 	/**
 	 * 
 	 */
-	protected String resolveAuthorizathionHeader() {
+	protected String resolveAuthorizathionToken() {
 		
 		return "";
 	}
