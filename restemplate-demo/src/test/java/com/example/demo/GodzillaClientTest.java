@@ -61,7 +61,7 @@ class GodzillaClientTest {
 				.headers(headers));
 		
 		
-		Godzilla response = this.client.getGodzilla(godzillaMock.getNombre());
+		Godzilla response = this.client.getGodzilla(godzillaMock.getNombre()).getContent();
 		
 		Assertions.assertEquals(godzillaMock.getId(), response.getId());
 		Assertions.assertEquals(godzillaMock.getEdad(), response.getEdad());
@@ -86,7 +86,7 @@ class GodzillaClientTest {
 				.headers(headers));
 		
 		
-		List<Godzilla> response = this.client.getFamiliGodzilla();
+		List<Godzilla> response = this.client.getFamiliGodzilla().getContent();
 		
 		Assertions.assertEquals(familyPapo.size(),response.size());
 	}

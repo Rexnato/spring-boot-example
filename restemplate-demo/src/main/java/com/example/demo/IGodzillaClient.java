@@ -6,9 +6,9 @@ public interface IGodzillaClient {
 	
 	//gets
 	
-	Godzilla getGodzilla(String nombre);
+	ResponseDTO<Godzilla> getGodzilla(String nombre);
 	
-	List<Godzilla> getFamiliGodzilla();
+	ResponseDTO<List<Godzilla>> getFamiliGodzilla();
 	
 	Godzilla postGodzilla(Godzilla godzilla);
 	

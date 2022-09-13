@@ -4,6 +4,7 @@ package com.example.demo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -53,7 +54,7 @@ public class ClientGenericBase {
 	 * @return 
 	 * @return 
 	 */
-	public  <T> ResponseDTO<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
+	public  <T> ResponseDTO<T> execute(String urlProperties,HttpMethod httpMetod,ParameterizedTypeReference<T> responseType) {
 		
 		String url =  this.resolveUrlProperties(urlProperties);
 		
@@ -62,7 +63,7 @@ public class ClientGenericBase {
 		ResponseEntity<T> responseEntity = null;
 		
 		try {
-			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseType);
 			
 		} catch (HttpStatusCodeException e) {
 			 return this.getResponseErrorClient().resolveResponseError(e.getStatusCode(), e.getResponseBodyAsString());
