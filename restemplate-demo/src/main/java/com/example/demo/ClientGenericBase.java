@@ -38,17 +38,27 @@ public class ClientGenericBase {
 	/***
 	 * Method to consume http method ,withoud body in send petion
 	 * @param <T>
+	 * @param <T>
 	 * @param url
 	 * @return 
 	 * @return 
 	 */
-	public  <T> ResponseEntity<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
+	public  <T> ResponseDTO<T> execute(String urlProperties,HttpMethod httpMetod,Class<T> responseTypeClass) {
 		
 		String url =  this.resolveUrlProperties(urlProperties);
 		
 		HttpEntity<String> httpEntity = new HttpEntity<>(addHeaders());
-	
-		return this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+		
+		ResponseEntity<T> responseEntity = null;
+		
+		try {
+			responseEntity = this.restTemplate.exchange(url, httpMetod, httpEntity, responseTypeClass);
+			
+		} catch (Exception e) {
+			 return getResponseErrorClient().doResolve(e);
+		}
+		
+		return new ResponseDTO<>(responseEntity.getBody(),responseEntity.getStatusCode());
 	}
 
 	/***
@@ -106,6 +116,24 @@ public class ClientGenericBase {
 		return url;
 	}
 	
+	/***
+	 * if this method is not override resolve the error from exception with values from IResponse error client generic
+	 * @return
+	 */
+	protected IResponseErrorClient getResponseErrorClient() {
+		
+		return new IResponseErrorClient() {
+			
+			@Override
+			public <T> ResponseDTO<T> doResolve(Exception exception) {
+				
+				return null;
+			}
+		};
+	}
+	
+	
+	
 	/**
 	 * Method that resolve authorizathiontoken 
 	 * this method will be overwrite 
@@ -120,6 +148,23 @@ public class ClientGenericBase {
 	protected String resolveAuthorizathionToken(String arg) {
 		
 		return String.format("Authorization: %s", arg);
+	}
+	
+	
+	/**
+	 * Interface to custumise error response
+	 * @author jnoh
+	 *
+	 */
+	public interface IResponseErrorClient {
+		
+		/**
+		 * Metodo to resolve response from exception
+		 * @param <T>
+		 * @param exception
+		 * @return
+		 */
+		<T> ResponseDTO<T> doResolve(Exception exception);
 	}
 
 
